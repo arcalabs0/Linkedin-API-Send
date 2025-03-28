@@ -76,7 +76,7 @@ class LinkedInEasyApplier:
             see_more_button = self.driver.find_element(By.XPATH, '//button[@aria-label="Click to see more description"]')
             see_more_button.click()
             time.sleep(.2)
-            description = self.driver.find_element(By.CLASS_NAME, 'jobs-description-content__text').text
+            description = self.driver.find_element(By.CSS_SELECTOR, '.jobs-description-content__text').text
             # self._scroll_page()
             return description
         except NoSuchElementException:
@@ -98,7 +98,7 @@ class LinkedInEasyApplier:
                 break
 
     def _next_or_submit(self):
-        next_button = self.driver.find_element(By.CLASS_NAME, "artdeco-button--primary")
+        next_button = self.driver.find_element(By.CSS_SELECTOR, ".artdeco-button--primary")
         button_text = next_button.text.lower()
         if 'submit application' in button_text:
             self._unfollow_company()
@@ -123,23 +123,23 @@ class LinkedInEasyApplier:
             pass
 
     def _check_for_errors(self) -> None:
-        error_elements = self.driver.find_elements(By.CLASS_NAME, 'artdeco-inline-feedback--error')
+        error_elements = self.driver.find_elements(By.CSS_SELECTOR, '.artdeco-inline-feedback--error')
         if error_elements:
             raise Exception(f"Failed answering or file upload. {str([e.text for e in error_elements])}")
 
     def _discard_application(self) -> None:
         try:
-            self.driver.find_element(By.CLASS_NAME, 'artdeco-modal__dismiss').click()
+            self.driver.find_element(By.CSS_SELECTOR, '.artdeco-modal__dismiss').click()
             time.sleep(random.uniform(3, 5))
-            self.driver.find_elements(By.CLASS_NAME, 'artdeco-modal__confirm-dialog-btn')[0].click()
+            self.driver.find_elements(By.CSS_SELECTOR, '.artdeco-modal__confirm-dialog-btn')[0].click()
             time.sleep(random.uniform(3, 5))
         except Exception as e:
             pass
 
     def fill_up(self) -> None:
         try:
-            easy_apply_content = self.driver.find_element(By.CLASS_NAME, 'jobs-easy-apply-content')
-            pb4_elements = easy_apply_content.find_elements(By.CLASS_NAME, 'pb4')
+            easy_apply_content = self.driver.find_element(By.CSS_SELECTOR, '.jobs-easy-apply-content')
+            pb4_elements = easy_apply_content.find_elements(By.CSS_SELECTOR, '.pb4')
             for element in pb4_elements:
                 self._process_form_element(element)
         except Exception as e:
@@ -224,7 +224,7 @@ class LinkedInEasyApplier:
             element.send_keys(letter_path)
 
     def _fill_additional_questions(self) -> None:
-        form_sections = self.driver.find_elements(By.CLASS_NAME, 'jobs-easy-apply-form-section__grouping')
+        form_sections = self.driver.find_elements(By.CSS_SELECTOR, '.jobs-easy-apply-form-section__grouping')
         for section in form_sections:
             self._process_question(section)
 
@@ -238,7 +238,7 @@ class LinkedInEasyApplier:
 
     def _handle_terms_of_service(self, element: WebElement) -> bool:
         try:
-            question = element.find_element(By.CLASS_NAME, 'jobs-easy-apply-form-element')
+            question = element.find_element(By.CSS_SELECTOR, '.jobs-easy-apply-form-element')
             checkbox = question.find_element(By.TAG_NAME, 'label')
             question_text = question.text.lower()
             if 'terms of service' in question_text or 'privacy policy' in question_text or 'terms of use' in question_text:
@@ -250,8 +250,8 @@ class LinkedInEasyApplier:
 
     def _handle_radio_question(self, element: WebElement) -> None:
         try:
-            question = element.find_element(By.CLASS_NAME, 'jobs-easy-apply-form-element')
-            radios = question.find_elements(By.CLASS_NAME, 'fb-text-selectable__option')
+            question = element.find_element(By.CSS_SELECTOR, '.jobs-easy-apply-form-element')
+            radios = question.find_elements(By.CSS_SELECTOR, '.fb-text-selectable__option')
             if not radios:
                 return
 
@@ -276,7 +276,7 @@ class LinkedInEasyApplier:
 
     def _handle_textbox_question(self, element: WebElement) -> None:
         try:
-            question = element.find_element(By.CLASS_NAME, 'jobs-easy-apply-form-element')
+            question = element.find_element(By.CSS_SELECTOR, '.jobs-easy-apply-form-element')
             question_text = question.find_element(By.TAG_NAME, 'label').text.lower()
             text_field = self._find_text_field(question)
             if not text_field:
@@ -303,7 +303,7 @@ class LinkedInEasyApplier:
 
     def _handle_date_question(self, element: WebElement) -> None:
         try:
-            date_picker = element.find_element(By.CLASS_NAME, 'artdeco-datepicker__input')
+            date_picker = element.find_element(By.CSS_SELECTOR, '.artdeco-datepicker__input')
             if not date_picker:
                 print("Date picker element not found(early).")
                 return
@@ -323,7 +323,7 @@ class LinkedInEasyApplier:
 
     def _handle_dropdown_question(self, element: WebElement) -> None:
         try:
-            question = element.find_element(By.CLASS_NAME, 'jobs-easy-apply-form-element')
+            question = element.find_element(By.CSS_SELECTOR, '.jobs-easy-apply-form-element')
             question_text = question.find_element(By.TAG_NAME, 'label').text.lower()
             dropdown = question.find_element(By.TAG_NAME, 'select')
             select = Select(dropdown)
@@ -382,7 +382,7 @@ class LinkedInEasyApplier:
         try:
             # Locate the first dropdown suggestion and click it
             dropdown = WebDriverWait(self.driver, 2).until(
-                EC.visibility_of_element_located((By.CLASS_NAME, 'search-typeahead-v2__hit'))
+                EC.visibility_of_element_located((By.CSS_SELECTOR, '.search-typeahead-v2__hit'))
             )
             dropdown.click()
             time.sleep(0.5)  # Wait to ensure the selection is made
@@ -403,7 +403,7 @@ class LinkedInEasyApplier:
 
     def _handle_form_errors(self, element: WebElement, question_text: str, answer: str, text_field: WebElement) -> None:
         try:
-            error = element.find_element(By.CLASS_NAME, 'artdeco-inline-feedback--error')
+            error = element.find_element(By.CSS_SELECTOR, '.artdeco-inline-feedback--error')
             error_text = error.text.lower()
             new_answer = self.gpt_answerer.try_fix_answer(question_text, answer, error_text)
             self._enter_text(text_field, new_answer)

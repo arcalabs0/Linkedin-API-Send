@@ -117,12 +117,29 @@ class LinkedInJobManager:
 
     def apply_jobs(self):
         try:
-            try:
-                no_jobs_element = self.driver.find_element(By.CLASS_NAME, 'jobs-search-two-pane__no-results-banner--expand')
-                if 'No matching jobs found' in no_jobs_element.text or 'unfortunately, things aren' in self.driver.page_source.lower():
+            # Check for no results using more reliable method
+            no_jobs_elements = self.driver.find_elements(By.CSS_SELECTOR, '.jobs-search-no-results-banner, .jobs-search-two-pane__no-results-banner')
+            
+            # Alternative text check if elements not found via classes
+            if not no_jobs_elements:
+                no_jobs_elements = self.driver.find_elements(By.XPATH, '//*[contains(., "No matching jobs found")]')
+
+            # Verify if we actually have no results
+            if no_jobs_elements:
+                no_jobs_text = no_jobs_elements[0].text.lower()
+                if any(msg in no_jobs_text for msg in ['no matching jobs found', 'unfortunately, things aren']):
                     raise Exception("No more jobs on this page")
-            except NoSuchElementException:
-                pass
+
+            # Additional check in page source as fallback
+            if 'unfortunately, things aren' in self.driver.page_source.lower():
+                raise Exception("No more jobs on this page")
+
+            # If we get here, jobs are present
+            # ... rest of your job application logic ...
+
+        except NoSuchElementException:
+            # This exception is now redundant and can be removed
+            pass
             
             job_results = self.driver.find_element(By.CLASS_NAME, "jobs-search-results-list")
             utils.scroll_slow(self.driver, job_results)
