@@ -1,0 +1,46 @@
+Found jobs container with selector: div[data-job-id]
+Found job results with selector: .job-card-container--clickable
+The element is not scrollable.
+The element is not scrollable.
+Created TensorFlow Lite XNNPACK delegate for CPU.
+Timeout waiting for job listings
+Error in apply_jobs: No job elements found within timeout period
+Traceback (most recent call last):
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_job_manager.py", line 236, in apply_jobs
+    container = wait.until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, '.jobs-search-results-list'))
+    )
+  File "c:\Users\Marcelo\AppData\Local\Programs\Python\Python313\Lib\site-packages\selenium\webdriver\support\wait.py", line 101, in until
+    raise TimeoutException(message, screen, stacktrace)
+selenium.common.exceptions.TimeoutException: Message:
+Stacktrace:
+        GetHandleVerifier [0x008DC7F3+24435]
+        (No symbol) [0x00862074]
+        (No symbol) [0x007306E3]
+        (No symbol) [0x00778B39]
+        (No symbol) [0x00778E8B]
+        (No symbol) [0x007C1AC2]
+        (No symbol) [0x0079D804]
+        (No symbol) [0x007BF20A]
+        (No symbol) [0x0079D5B6]
+        (No symbol) [0x0076C54F]
+        (No symbol) [0x0076D894]
+        GetHandleVerifier [0x00BE70A3+3213347]
+        GetHandleVerifier [0x00BFB0C9+3295305]
+        GetHandleVerifier [0x00BF558C+3271948]
+        GetHandleVerifier [0x00977360+658144]
+        (No symbol) [0x0086B27D]
+        (No symbol) [0x00868208]
+        (No symbol) [0x008683A9]
+        (No symbol) [0x0085AAC0]
+        BaseThreadInitThunk [0x75287BA9+25]
+        RtlInitializeExceptionChain [0x76FAC2EB+107]
+        RtlClearBits [0x76FAC26F+191]
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_job_manager.py", line 252, in apply_jobs
+    raise Exception("No job elements found within timeout period")
+Exception: No job elements found within timeout period

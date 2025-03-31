@@ -1,0 +1,63 @@
+Exception has occurred: NoSuchElementException
+Message: no such element: Unable to locate element: {"method":"css selector","selector":".jobs-search-results-list"}
+  (Session info: chrome=134.0.6998.178); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+	GetHandleVerifier [0x0063C7F3+24435]
+	(No symbol) [0x005C2074]
+	(No symbol) [0x004906E3]
+	(No symbol) [0x004D8B39]
+	(No symbol) [0x004D8E8B]
+	(No symbol) [0x00521AC2]
+	(No symbol) [0x004FD804]
+	(No symbol) [0x0051F20A]
+	(No symbol) [0x004FD5B6]
+	(No symbol) [0x004CC54F]
+	(No symbol) [0x004CD894]
+	GetHandleVerifier [0x009470A3+3213347]
+	GetHandleVerifier [0x0095B0C9+3295305]
+	GetHandleVerifier [0x0095558C+3271948]
+	GetHandleVerifier [0x006D7360+658144]
+	(No symbol) [0x005CB27D]
+	(No symbol) [0x005C8208]
+	(No symbol) [0x005C83A9]
+	(No symbol) [0x005BAAC0]
+	BaseThreadInitThunk [0x75287BA9+25]
+	RtlInitializeExceptionChain [0x76FAC2EB+107]
+	RtlClearBits [0x76FAC26F+191]
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_job_manager.py", line 127, in apply_jobs
+    job_results = self.driver.find_element(By.CLASS_NAME, "jobs-search-results-list")
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_job_manager.py", line 91, in start_applying
+    self.apply_jobs()
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_bot_facade.py", line 57, in start_apply
+    self.apply_component.start_applying()
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\main.py", line 187, in create_and_run_bot
+    bot.start_apply()
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\main.py", line 202, in main
+    create_and_run_bot(email, password, parameters, openai_api_key)
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\main.py", line 219, in <module>
+    main()
+selenium.common.exceptions.NoSuchElementException: Message: no such element: Unable to locate element: {"method":"css selector","selector":".jobs-search-results-list"}
+  (Session info: chrome=134.0.6998.178); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+	GetHandleVerifier [0x0063C7F3+24435]
+	(No symbol) [0x005C2074]
+	(No symbol) [0x004906E3]
+	(No symbol) [0x004D8B39]
+	(No symbol) [0x004D8E8B]
+	(No symbol) [0x00521AC2]
+	(No symbol) [0x004FD804]
+	(No symbol) [0x0051F20A]
+	(No symbol) [0x004FD5B6]
+	(No symbol) [0x004CC54F]
+	(No symbol) [0x004CD894]
+	GetHandleVerifier [0x009470A3+3213347]
+	GetHandleVerifier [0x0095B0C9+3295305]
+	GetHandleVerifier [0x0095558C+3271948]
+	GetHandleVerifier [0x006D7360+658144]
+	(No symbol) [0x005CB27D]
+	(No symbol) [0x005C8208]
+	(No symbol) [0x005C83A9]
+	(No symbol) [0x005BAAC0]
+	BaseThreadInitThunk [0x75287BA9+25]
+	RtlInitializeExceptionChain [0x76FAC2EB+107]
+	RtlClearBits [0x76FAC26F+191]

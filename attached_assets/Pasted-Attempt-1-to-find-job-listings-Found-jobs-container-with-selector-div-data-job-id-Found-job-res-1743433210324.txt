@@ -1,0 +1,185 @@
+Attempt 1 to find job listings...
+Found jobs container with selector: div[data-job-id]
+Found job results with selector: .job-card-container--clickable
+The element is not scrollable.
+Trying selector: .jobs-search-results-list
+Trying selector: .job-card-container--clickable
+Found 7 job listings with selector .job-card-container--clickable
+Blacklisted React Developer (Junior-Mid) - Regensburg
+React Developer (Junior-Mid) - Regensburg with verification at Noir, skipping...
+Attempting to apply for Python Developer - (Remote - Europe)
+Python Developer - (Remote - Europe) at Jobgether...
+[9628:13996:0331/115628.187:ERROR:socket_manager.cc(147)] Failed to resolve address for stun.l.google.com., errorcode: -105
+[17124:10504:0331/115628.444:ERROR:gles2_cmd_decoder_passthrough.cc(1094)] [GroupMarkerNotSet(crbug.com/242999)!:A080260074510000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.
+[17124:10504:0331/115628.471:ERROR:gles2_cmd_decoder_passthrough.cc(1094)] [GroupMarkerNotSet(crbug.com/242999)!:A010270074510000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.
+[17124:10504:0331/115628.505:ERROR:gl_utils.cc(431)] [.WebGL-0x71f403174e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[17124:10504:0331/115628.582:ERROR:gles2_cmd_decoder_passthrough.cc(1094)] [GroupMarkerNotSet(crbug.com/242999)!:A000300074510000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader flag to opt in to lower security guarantees for trusted content.
+Failed to apply for Python Developer - (Remote - Europe)
+Python Developer - (Remote - Europe) at Jobgether: Failed to apply to job! Original exception:
+Traceback:
+Traceback (most recent call last):
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_easy_applier.py", line 79, in _get_job_description
+    description = self.driver.find_element(By.CSS_SELECTOR, '.jobs-description-content__text').text
+                  ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\Marcelo\AppData\Local\Programs\Python\Python313\Lib\site-packages\selenium\webdriver\remote\webdriver.py", line 741, in find_element
+    return self.execute(Command.FIND_ELEMENT, {"using": by, "value": value})["value"]
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\Marcelo\AppData\Local\Programs\Python\Python313\Lib\site-packages\selenium\webdriver\remote\webdriver.py", line 347, in execute
+    self.error_handler.check_response(response)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "c:\Users\Marcelo\AppData\Local\Programs\Python\Python313\Lib\site-packages\selenium\webdriver\remote\errorhandler.py", line 229, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.NoSuchElementException: Message: no such element: Unable to locate element: {"method":"css selector","selector":".jobs-description-content__text"}
+  (Session info: chrome=134.0.6998.178); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+        GetHandleVerifier [0x00EDC7F3+24435]
+        (No symbol) [0x00E62074]
+        (No symbol) [0x00D306E3]
+        (No symbol) [0x00D78B39]
+        (No symbol) [0x00D78E8B]
+        (No symbol) [0x00DC1AC2]
+        (No symbol) [0x00D9D804]
+        (No symbol) [0x00DBF20A]
+        (No symbol) [0x00D9D5B6]
+        (No symbol) [0x00D6C54F]
+        (No symbol) [0x00D6D894]
+        GetHandleVerifier [0x011E70A3+3213347]
+        GetHandleVerifier [0x011FB0C9+3295305]
+        GetHandleVerifier [0x011F558C+3271948]
+        GetHandleVerifier [0x00F77360+658144]
+        (No symbol) [0x00E6B27D]
+        (No symbol) [0x00E68208]
+        (No symbol) [0x00E683A9]
+        (No symbol) [0x00E5AAC0]
+        BaseThreadInitThunk [0x75287BA9+25]
+        RtlInitializeExceptionChain [0x76FAC2EB+107]
+        RtlClearBits [0x76FAC26F+191]
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_easy_applier.py", line 46, in job_apply
+    job_description = self._get_job_description()
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_easy_applier.py", line 84, in _get_job_description
+    raise Exception("Job description 'See more' button not found: \nTraceback:\n{tb_str}")
+Exception: Job description 'See more' button not found:
+Traceback:
+{tb_str}
+
+Traceback (most recent call last):
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_easy_applier.py", line 79, in _get_job_description
+    description = self.driver.find_element(By.CSS_SELECTOR, '.jobs-description-content__text').text
+                  ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\Marcelo\AppData\Local\Programs\Python\Python313\Lib\site-packages\selenium\webdriver\remote\webdriver.py", line 741, in find_element
+    return self.execute(Command.FIND_ELEMENT, {"using": by, "value": value})["value"]
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\Marcelo\AppData\Local\Programs\Python\Python313\Lib\site-packages\selenium\webdriver\remote\webdriver.py", line 347, in execute
+    self.error_handler.check_response(response)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "c:\Users\Marcelo\AppData\Local\Programs\Python\Python313\Lib\site-packages\selenium\webdriver\remote\errorhandler.py", line 229, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.NoSuchElementException: Message: no such element: Unable to locate element: {"method":"css selector","selector":".jobs-description-content__text"}
+  (Session info: chrome=134.0.6998.178); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+        GetHandleVerifier [0x00EDC7F3+24435]
+        (No symbol) [0x00E62074]
+        (No symbol) [0x00D306E3]
+        (No symbol) [0x00D78B39]
+        (No symbol) [0x00D78E8B]
+        (No symbol) [0x00DC1AC2]
+        (No symbol) [0x00D9D804]
+        (No symbol) [0x00DBF20A]
+        (No symbol) [0x00D9D5B6]
+        (No symbol) [0x00D6C54F]
+        (No symbol) [0x00D6D894]
+        GetHandleVerifier [0x011E70A3+3213347]
+        GetHandleVerifier [0x011FB0C9+3295305]
+        GetHandleVerifier [0x011F558C+3271948]
+        GetHandleVerifier [0x00F77360+658144]
+        (No symbol) [0x00E6B27D]
+        (No symbol) [0x00E68208]
+        (No symbol) [0x00E683A9]
+        (No symbol) [0x00E5AAC0]
+        BaseThreadInitThunk [0x75287BA9+25]
+        RtlInitializeExceptionChain [0x76FAC2EB+107]
+        RtlClearBits [0x76FAC26F+191]
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_easy_applier.py", line 46, in job_apply
+    job_description = self._get_job_description()
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_easy_applier.py", line 84, in _get_job_description
+    raise Exception("Job description 'See more' button not found: \nTraceback:\n{tb_str}")
+Exception: Job description 'See more' button not found:
+Traceback:
+{tb_str}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_job_manager.py", line 289, in apply_jobs
+    self.easy_applier_component.job_apply(job)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_easy_applier.py", line 54, in job_apply
+    raise Exception(f"Failed to apply to job! Original exception: \nTraceback:\n{tb_str}")
+Exception: Failed to apply to job! Original exception:
+Traceback:
+Traceback (most recent call last):
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_easy_applier.py", line 79, in _get_job_description
+    description = self.driver.find_element(By.CSS_SELECTOR, '.jobs-description-content__text').text
+                  ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\Marcelo\AppData\Local\Programs\Python\Python313\Lib\site-packages\selenium\webdriver\remote\webdriver.py", line 741, in find_element
+    return self.execute(Command.FIND_ELEMENT, {"using": by, "value": value})["value"]
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\Marcelo\AppData\Local\Programs\Python\Python313\Lib\site-packages\selenium\webdriver\remote\webdriver.py", line 347, in execute
+    self.error_handler.check_response(response)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "c:\Users\Marcelo\AppData\Local\Programs\Python\Python313\Lib\site-packages\selenium\webdriver\remote\errorhandler.py", line 229, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.NoSuchElementException: Message: no such element: Unable to locate element: {"method":"css selector","selector":".jobs-description-content__text"}
+  (Session info: chrome=134.0.6998.178); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+        GetHandleVerifier [0x00EDC7F3+24435]
+        (No symbol) [0x00E62074]
+        (No symbol) [0x00D306E3]
+        (No symbol) [0x00D78B39]
+        (No symbol) [0x00D78E8B]
+        (No symbol) [0x00DC1AC2]
+        (No symbol) [0x00D9D804]
+        (No symbol) [0x00DBF20A]
+        (No symbol) [0x00D9D5B6]
+        (No symbol) [0x00D6C54F]
+        (No symbol) [0x00D6D894]
+        GetHandleVerifier [0x011E70A3+3213347]
+        GetHandleVerifier [0x011FB0C9+3295305]
+        GetHandleVerifier [0x011F558C+3271948]
+        GetHandleVerifier [0x00F77360+658144]
+        (No symbol) [0x00E6B27D]
+        (No symbol) [0x00E68208]
+        (No symbol) [0x00E683A9]
+        (No symbol) [0x00E5AAC0]
+        BaseThreadInitThunk [0x75287BA9+25]
+        RtlInitializeExceptionChain [0x76FAC2EB+107]
+        RtlClearBits [0x76FAC26F+191]
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_easy_applier.py", line 46, in job_apply
+    job_description = self._get_job_description()
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_easy_applier.py", line 84, in _get_job_description
+    raise Exception("Job description 'See more' button not found: \nTraceback:\n{tb_str}")
+Exception: Job description 'See more' button not found:
+Traceback:
+{tb_str}
+
+
+Error extracting job information: Could not find job title element
+Error extracting job information: Could not find job title element
+Error extracting job information: Could not find job title element
+Error extracting job information: Could not find job title element
+Error extracting job information: Could not find job title element

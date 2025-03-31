@@ -5,8 +5,10 @@ import time
 import traceback
 from itertools import product
 from pathlib import Path
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import utils
 from job import Job
 from linkedIn_easy_applier import LinkedInEasyApplier
@@ -117,60 +119,190 @@ class LinkedInJobManager:
 
     def apply_jobs(self):
         try:
-            # Check for no results using more reliable method
+            # Constants for retry logic
+            max_retries = 5
+            base_timeout = 10
+            retry_delay = 1
+
+            def wait_for_page_load():
+                try:
+                    WebDriverWait(self.driver, base_timeout).until(
+                        lambda d: d.execute_script('return document.readyState') == 'complete'
+                    )
+                    time.sleep(2)  # Additional buffer for dynamic content
+                    return True
+                except:
+                    return False
+
+            def check_for_no_results():
+                try:
+                    no_results = self.driver.find_elements(By.CSS_SELECTOR, 
+                        '.jobs-search-no-results-banner, .jobs-search-two-pane__no-results-banner, .jobs-search-results__zero-results')
+                    return any(elem.is_displayed() for elem in no_results if elem.text.strip())
+                except:
+                    return False
+
+            # Wait for initial page load
+            if not wait_for_page_load():
+                utils.printred("Page failed to load completely")
+                raise Exception("Page load timeout")
+
+            # Check for "No results" message
+            if check_for_no_results():
+                utils.printyellow("No jobs found on this page")
+                return
+
+            # List of possible job container selectors
+            container_selectors = [
+                '.jobs-search-results-list',
+                '.jobs-search__job-card-list',
+                '.jobs-search-results__list',
+                'div[data-job-id]',
+                '.job-card-container--clickable'
+            ]
+
+            job_container = None
+            for attempt in range(max_retries):
+                utils.printyellow(f"Attempt {attempt + 1} to find job listings...")
+
+                # Try each selector
+                for selector in container_selectors:
+                    try:
+                        job_container = WebDriverWait(self.driver, base_timeout).until(
+                            EC.presence_of_element_located((By.CSS_SELECTOR, selector))
+                        )
+                        if job_container and job_container.is_displayed():
+                            utils.printyellow(f"Found jobs container with selector: {selector}")
+                            break
+                    except:
+                        continue
+
+                if job_container:
+                    break
+
+                if attempt < max_retries - 1:
+                    utils.printyellow("Refreshing page and waiting...")
+                    self.driver.refresh()
+                    wait_for_page_load()
+                    time.sleep(retry_delay)
+
+            if not job_container:
+                utils.printred("Could not find job listings after multiple attempts")
+                self.driver.save_screenshot("debug_screenshot.png")
+                raise Exception("Failed to find job listings container")
+
+            # Check for no results with expanded selector set
             no_jobs_elements = self.driver.find_elements(By.CSS_SELECTOR, '.jobs-search-no-results-banner, .jobs-search-two-pane__no-results-banner')
-            
-            # Alternative text check if elements not found via classes
-            if not no_jobs_elements:
-                no_jobs_elements = self.driver.find_elements(By.XPATH, '//*[contains(., "No matching jobs found")]')
-
-            # Verify if we actually have no results
             if no_jobs_elements:
-                no_jobs_text = no_jobs_elements[0].text.lower()
-                if any(msg in no_jobs_text for msg in ['no matching jobs found', 'unfortunately, things aren']):
-                    raise Exception("No more jobs on this page")
+                for element in no_jobs_elements:
+                    if any(msg in element.text.lower() for msg in ['no matching jobs', 'no results', 'unfortunately']):
+                        raise Exception("No more jobs on this page")
 
-            # Additional check in page source as fallback
-            if 'unfortunately, things aren' in self.driver.page_source.lower():
-                raise Exception("No more jobs on this page")
+            # Try multiple possible selectors for job results with expanded options
+            job_results = None
+            result_selectors = [
+                ".job-card-container--clickable",
+                ".jobs-search-two-pane__job-card-container--viewport-tracking-0",
+                ".display-flex.job-card-container",
+                ".ember-view.IspRkqvswCKn5tIZoOXAsMzxtPjaCOKmY.occludable-update",
+                ".job-card-list__title-link",
+                ".artdeco-entity-lockup__content"
+            ]
 
-            # If we get here, jobs are present
-            # ... rest of your job application logic ...
-
-        except NoSuchElementException:
-            # This exception is now redundant and can be removed
-            pass
-            
-            job_results = self.driver.find_element(By.CLASS_NAME, "jobs-search-results-list")
-            utils.scroll_slow(self.driver, job_results)
-            utils.scroll_slow(self.driver, job_results, step=300, reverse=True)
-            
-            job_list_elements = self.driver.find_elements(By.CLASS_NAME, 'scaffold-layout__list-container')[0].find_elements(By.CLASS_NAME, 'jobs-search-results__list-item')
-            
-            if not job_list_elements:
-                raise Exception("No job class elements found on page")
-            
-            job_list = [Job(*self.extract_job_information_from_tile(job_element)) for job_element in job_list_elements]
-            
-            for job in job_list:
-                if self.is_blacklisted(job.title, job.company, job.link):
-                    utils.printyellow(f"Blacklisted {job.title} at {job.company}, skipping...")
-                    self.write_to_file(job.company, job.location, job.title, job.link, "skipped")
+            for selector in result_selectors:
+                try:
+                    job_results = WebDriverWait(self.driver, 10).until(
+                        EC.presence_of_element_located((By.CSS_SELECTOR, selector))
+                    )
+                    if job_results.is_displayed():
+                        utils.printyellow(f"Found job results with selector: {selector}")
+                        break
+                except:
                     continue
 
-                try:
-                    if job.apply_method not in {"Continue", "Applied", "Apply"}:
-                        self.easy_applier_component.job_apply(job)
-                except Exception as e:
-                    utils.printred(traceback.format_exc())
-                    self.write_to_file(job.company, job.location, job.title, job.link, "failed")
-                    continue  
-                self.write_to_file(job.company, job.location, job.title, job.link, "success")
-        
+            if not job_results:
+                utils.printred("Could not find job results list")
+                raise Exception("Could not find job results list")
+
+            utils.scroll_slow(self.driver, job_results, step=400)
+
+            # Wait for job listings to be present with multiple selector attempts
+            job_list_elements = []
+            wait = WebDriverWait(self.driver, base_timeout)
+
+            selectors = [
+                '.jobs-search-results-list',
+                '.job-card-container--clickable',
+                '.jobs-search__job-card-list',
+                '.jobs-s-apply',
+                '.job-details-jobs-unified-top-card__primary-description-container'
+            ]
+
+            try:
+                # Try each selector
+                for selector in selectors:
+                    try:
+                        utils.printyellow(f"Trying selector: {selector}")
+                        job_list_elements = wait.until(
+                            EC.presence_of_all_elements_located((By.CSS_SELECTOR, selector))
+                        )
+                        if job_list_elements:
+                            utils.printyellow(f"Found {len(job_list_elements)} job listings with selector {selector}")
+                            break
+                    except:
+                        continue
+
+                if not job_list_elements:
+                    # Try the new job card structure
+                    try:
+                        container = wait.until(
+                            EC.presence_of_element_located((By.CSS_SELECTOR, '.jobs-search__job-details--wrapper'))
+                        )
+                        job_list_elements = container.find_elements(By.CSS_SELECTOR, '.job-details-jobs-unified-top-card')
+                    except:
+                        pass
+
+                if not job_list_elements:
+                    utils.printred("No job listings found with any selector")
+                    raise Exception("No job elements found on page")
+
+            except Exception as e:
+                utils.printred(f"Error finding job listings: {str(e)}")
+                raise Exception("Failed to find job listings")
+
+            if not job_list_elements:
+                raise Exception("No job elements found on page")
+
+            for job_element in job_list_elements:
+                job_info = self.extract_job_information_from_tile(job_element)
+                if not any(info is None for info in job_info):
+                    job = Job(*job_info)
+
+                    if self.is_blacklisted(job.title, job.company, job.link):
+                        utils.printyellow(f"Blacklisted {job.title} at {job.company}, skipping...")
+                        self.write_to_file(job.company, job.location, job.title, job.link, "skipped")
+                        continue
+
+                    try:
+                        if job.apply_method in {"Easy Apply", "Apply"}:
+                            utils.printyellow(f"Attempting to apply for {job.title} at {job.company}...")
+                            self.easy_applier_component.job_apply(job)
+                            utils.printyellow(f"Successfully applied to {job.title} at {job.company}")
+                            self.write_to_file(job.company, job.location, job.title, job.link, "success")
+                        else:
+                            utils.printyellow(f"Skipping {job.title} - not an Easy Apply job")
+                            self.write_to_file(job.company, job.location, job.title, job.link, "skipped")
+                    except Exception as e:
+                        utils.printred(f"Failed to apply for {job.title} at {job.company}: {str(e)}")
+                        utils.printred(traceback.format_exc())
+                        self.write_to_file(job.company, job.location, job.title, job.link, "failed")
+
         except Exception as e:
-            traceback.format_exc()
+            utils.printred(f"Error in apply_jobs: {str(e)}")
+            utils.printred(traceback.format_exc())
             raise e
-    
+
+
     def write_to_file(self, company, job_title, link, job_location, file_name):
         to_write = [company, job_title, link, job_location]
         file_path = self.output_file_directory / f"{file_name}.csv"
@@ -210,35 +342,128 @@ class LinkedInJobManager:
         url_parts.append("f_LF=f_AL")  # Easy Apply
         base_url = "&".join(url_parts)
         return f"?{base_url}{date_param}"
-    
+
     def next_job_page(self, position, location, job_page):
         self.driver.get(f"https://www.linkedin.com/jobs/search/{self.base_search_url}&keywords={position}{location}&start={job_page * 25}")
-    
+
     def extract_job_information_from_tile(self, job_tile):
         job_title, company, job_location, apply_method, link = "", "", "", "", ""
         try:
-            job_title = job_tile.find_element(By.CLASS_NAME, 'job-card-list__title').text
-            link = job_tile.find_element(By.CLASS_NAME, 'job-card-list__title').get_attribute('href').split('?')[0]
-            company = job_tile.find_element(By.CLASS_NAME, 'job-card-container__primary-description').text
-        except:
-            pass
-        try:
-            hiring_line = job_tile.find_element(By.XPATH, '//span[contains(.,\' is hiring for this\')]')
-            hiring_line_text = hiring_line.text
-            name_terminating_index = hiring_line_text.find(' is hiring for this')
-        except:
-            pass
-        try:
-            job_location = job_tile.find_element(By.CLASS_NAME, 'job-card-container__metadata-item').text
-        except:
-            pass
-        try:
-            apply_method = job_tile.find_element(By.CLASS_NAME, 'job-card-container__apply-method').text
-        except:
-            apply_method = "Applied"
+            # Multiple selectors for job title
+            title_selectors = [
+                '.job-card-list__title',
+                '.job-card-container__link',
+                'a[data-control-name="job_card_title"]',
+                '.jobs-search-results__list-item-title',
+                '.job-card-container__title',
+                '.job-card-list__entity-lockup',
+                '.jobs-unified-top-card__job-title',
+                '.job-card-list',
+                '.artdeco-entity-lockup__title',
+                'h3.base-search-card__title',
+                '.jobs-search-results__list-item .job-card-list__title',
+                '.job-card-container .job-card-list__title',
+                '.job-card-container__link span'
+            ]
+            
+            # Wait for job cards to load
+            WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, '.job-card-container'))
+            )
 
-        return job_title, company, job_location, link, apply_method
-    
+            # Try each title selector
+            title_element = None
+            for selector in title_selectors:
+                try:
+                    title_element = job_tile.find_element(By.CSS_SELECTOR, selector)
+                    if title_element.is_displayed():
+                        break
+                except:
+                    continue
+
+            if not title_element:
+                raise Exception("Could not find job title element")
+
+            job_title = title_element.text.strip()
+            link = title_element.get_attribute('href')
+            if link:
+                link = link.split('?')[0]
+
+            # Multiple selectors for company name with expanded coverage
+            company_selectors = [
+                '.job-card-container__primary-description',
+                '.job-card-container__company-name',
+                '.artdeco-entity-lockup__subtitle',
+                '.job-card-container__company-link',
+                '.job-search-card__company-name',
+                '.jobs-unified-top-card__company-name',
+                '.jobs-unified-top-card__primary-description',
+                'a[data-test-job-card-company-link]',
+                '.job-card-list__company-name',
+                '.jobs-company__name'
+            ]
+
+            # Try each company selector with improved error handling
+            for selector in company_selectors:
+                try:
+                    company_elements = job_tile.find_elements(By.CSS_SELECTOR, selector)
+                    for company_element in company_elements:
+                        if company_element.is_displayed():
+                            company_text = company_element.text.strip()
+                            if company_text:
+                                company = company_text
+                                break
+                    if company:  # If we found a company name, break the outer loop
+                        break
+                except Exception as e:
+                    continue
+
+            # If no company found, try parent elements
+            if not company:
+                try:
+                    parent = job_tile.find_element(By.CSS_SELECTOR, '.job-card-container__company-info')
+                    company = parent.text.strip().split('\n')[0]
+                except:
+                    pass
+
+            # Multiple selectors for location
+            location_selectors = [
+                '.job-card-container__metadata-item',
+                '.job-card-container__location',
+                '.job-card-container__location-text'
+            ]
+
+            # Try each location selector
+            for selector in location_selectors:
+                try:
+                    location_element = job_tile.find_element(By.CSS_SELECTOR, selector)
+                    if location_element.is_displayed():
+                        job_location = location_element.text.strip()
+                        break
+                except:
+                    continue
+
+            # Get apply method - look for "Easy Apply" button specifically
+            try:
+                apply_button = job_tile.find_element(By.CSS_SELECTOR, '.jobs-apply-button.artdeco-button--primary')
+                apply_method = apply_button.text.strip()
+            except:
+                try:
+                    # Fallback to general apply method
+                    apply_method = job_tile.find_element(By.CSS_SELECTOR, '.job-card-container__apply-method').text.strip()
+                except:
+                    apply_method = "Apply"
+
+            if not all([job_title, company, link]):
+                utils.printred(f"Missing critical job information: Title={job_title}, Company={company}, Link={link}")
+                return None, None, None, None, None
+
+            return job_title, company, job_location, link, apply_method
+
+        except Exception as e:
+            utils.printred(f"Error extracting job information: {str(e)}")
+            return None, None, None, None, None
+
     def is_blacklisted(self, job_title, company, link):
         job_title_words = job_title.lower().split(' ')
         title_blacklisted = any(word in job_title_words for word in self.title_blacklist)

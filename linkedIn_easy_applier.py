@@ -73,18 +73,76 @@ class LinkedInEasyApplier:
 
     def _get_job_description(self) -> str:
         try:
-            see_more_button = self.driver.find_element(By.XPATH, '//button[@aria-label="Click to see more description"]')
-            see_more_button.click()
-            time.sleep(.2)
-            description = self.driver.find_element(By.CSS_SELECTOR, '.jobs-description-content__text').text
-            # self._scroll_page()
-            return description
-        except NoSuchElementException:
+            # Wait for either of these elements to be present
+            description_selectors = [
+                '.jobs-description__content',
+                '.jobs-unified-top-card__job-details',
+                '.jobs-search-results-list',
+                '.jobs-description',
+                '[data-member-id]',
+                '.job-details-jobs-unified-top-card__primary-description-container'
+            ]
+            
+            # Wait for any of the selectors to be present
+            for selector in description_selectors:
+                try:
+                    WebDriverWait(self.driver, 3).until(
+                        EC.presence_of_element_located((By.CSS_SELECTOR, selector))
+                    )
+                    break
+                except:
+                    continue
+            
+            time.sleep(1)  # Allow dynamic content to load
+
+            # Try to find and click "see more" button if it exists
+            see_more_selectors = [
+                '//*[contains(@aria-label, "Click to see more")]',
+                '//button[contains(@class, "show-more-less-html__button")]',
+                '//button[contains(text(), "more")]',
+                '//button[contains(text(), "See more")]'
+            ]
+            
+            for selector in see_more_selectors:
+                try:
+                    buttons = self.driver.find_elements(By.XPATH, selector)
+                    if buttons:
+                        buttons[0].click()
+                        time.sleep(0.5)
+                        break
+                except:
+                    continue
+
+            # Updated list of description selectors
+            content_selectors = [
+                '.jobs-description__content span',
+                '.jobs-box__html-content',
+                '.jobs-unified-top-card__job-details',
+                '.jobs-description',
+                '.jobs-description-content__text',
+                '.job-details-jobs-unified-top-card__primary-description-container',
+                '.jobs-unified-top-card__job-details p',
+                '.jobs-description__content div'
+            ]
+
+            full_description = []
+            for selector in content_selectors:
+                try:
+                    elements = self.driver.find_elements(By.CSS_SELECTOR, selector)
+                    for element in elements:
+                        text = element.text.strip()
+                        if text:
+                            full_description.append(text)
+                except:
+                    continue
+
+            if full_description:
+                return '\n'.join(full_description)
+
+            raise Exception("Could not find job description with any selector")
+        except Exception as e:
             tb_str = traceback.format_exc()
-            raise Exception("Job description 'See more' button not found: \nTraceback:\n{tb_str}")
-        except Exception :
-            tb_str = traceback.format_exc()
-            raise Exception(f"Error getting Job description: \nTraceback:\n{tb_str}")
+            raise Exception(f"Error getting Job description: {str(e)}\nTraceback:\n{tb_str}")
 
     def _scroll_page(self) -> None:
         scrollable_element = self.driver.find_element(By.TAG_NAME, 'html')
@@ -192,10 +250,10 @@ class LinkedInEasyApplier:
 
                 # file_name_pdf = f"resume_{uuid.uuid4().hex}.pdf"
                 # file_path_pdf = os.path.join(folder_path, file_name_pdf)
-                
+
                 # with open(file_path_pdf, "wb") as f:
                 #     f.write(base64.b64decode(utils.HTML_to_PDF(file_name_HTML)))
-                    
+
                 # element.send_keys(os.path.abspath(file_path_pdf))
                 # time.sleep(2)  # Give some time for the upload process
                 # os.remove(file_name_HTML)
@@ -275,30 +333,66 @@ class LinkedInEasyApplier:
             print(f"An error occurred: {e}")
 
     def _handle_textbox_question(self, element: WebElement) -> None:
+        max_retries = 3
         try:
             question = element.find_element(By.CSS_SELECTOR, '.jobs-easy-apply-form-element')
             question_text = question.find_element(By.TAG_NAME, 'label').text.lower()
             text_field = self._find_text_field(question)
+            
             if not text_field:
-                print("Textbox element not found(early). Skipping...")
+                print("Textbox element not found. Skipping...")
                 return
-            # Check if the text field is already filled
+                
             if text_field.get_attribute('value').strip():
                 print("Textbox already filled. Skipping...")
-                return  # Early exit if the textbox is already filled
+                return
 
             is_numeric = self._is_numeric_field(text_field)
-            answer = self._get_answer_from_set('numeric' if is_numeric else 'text', question_text)
-
-            if not answer:
-                answer = self.gpt_answerer.answer_question_numeric(question_text) if is_numeric else self.gpt_answerer.answer_question_textual_wide_range(question_text)
-
-            self._enter_text(text_field, answer)
-            self._handle_form_errors(element, question_text, answer, text_field)
+            field_type = 'numeric' if is_numeric else 'text'
+            
+            for attempt in range(max_retries):
+                try:
+                    # First try to get answer from previous responses
+                    answer = self._get_answer_from_set(field_type, question_text)
+                    
+                    if not answer:
+                        # If no previous answer, get new one from GPT
+                        answer = (self.gpt_answerer.answer_question_numeric(question_text) 
+                                if is_numeric 
+                                else self.gpt_answerer.answer_question_textual_wide_range(question_text))
+                    
+                    # Clear and enter text
+                    text_field.clear()
+                    text_field.send_keys(answer)
+                    time.sleep(0.5)
+                    
+                    # Check for validation errors
+                    error_elements = element.find_elements(By.CSS_SELECTOR, '.artdeco-inline-feedback--error')
+                    if not error_elements:
+                        print(f"Successfully filled {question_text} with {answer}")
+                        return
+                    
+                    error_text = error_elements[0].text.lower()
+                    if 'valid' in error_text:
+                        print(f"Invalid answer format for {question_text}, retrying...")
+                        if attempt < max_retries - 1:
+                            # Get a new answer for next attempt, explicitly telling GPT about the error
+                            answer = self.gpt_answerer.try_fix_answer(question_text, answer, error_text)
+                            continue
+                    
+                    raise Exception(f"Failed to provide valid answer for {question_text}: {error_text}")
+                    
+                except Exception as e:
+                    if attempt == max_retries - 1:
+                        raise Exception(f"Max retries reached for {question_text}: {str(e)}")
+                    print(f"Attempt {attempt + 1} failed: {str(e)}")
+                    time.sleep(1)
+                    
         except NoSuchElementException:
             print("Textbox element not found.")
         except Exception as e:
-            print(f"An error occurred: {e}")
+            print(f"An error occurred while handling textbox question: {str(e)}")
+            raise
 
 
     def _handle_date_question(self, element: WebElement) -> None:
@@ -307,7 +401,7 @@ class LinkedInEasyApplier:
             if not date_picker:
                 print("Date picker element not found(early).")
                 return
-            
+
             # Check if the date picker is already filled
             if date_picker.get_attribute('value').strip():
                 print("Date already selected. Skipping...")

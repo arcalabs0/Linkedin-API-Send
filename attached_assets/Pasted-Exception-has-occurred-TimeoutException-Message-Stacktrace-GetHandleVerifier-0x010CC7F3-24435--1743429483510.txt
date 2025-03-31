@@ -1,0 +1,68 @@
+Exception has occurred: TimeoutException
+Message: 
+Stacktrace:
+	GetHandleVerifier [0x010CC7F3+24435]
+	(No symbol) [0x01052074]
+	(No symbol) [0x00F206E3]
+	(No symbol) [0x00F68B39]
+	(No symbol) [0x00F68E8B]
+	(No symbol) [0x00FB1AC2]
+	(No symbol) [0x00F8D804]
+	(No symbol) [0x00FAF20A]
+	(No symbol) [0x00F8D5B6]
+	(No symbol) [0x00F5C54F]
+	(No symbol) [0x00F5D894]
+	GetHandleVerifier [0x013D70A3+3213347]
+	GetHandleVerifier [0x013EB0C9+3295305]
+	GetHandleVerifier [0x013E558C+3271948]
+	GetHandleVerifier [0x01167360+658144]
+	(No symbol) [0x0105B27D]
+	(No symbol) [0x01058208]
+	(No symbol) [0x010583A9]
+	(No symbol) [0x0104AAC0]
+	BaseThreadInitThunk [0x75287BA9+25]
+	RtlInitializeExceptionChain [0x76FAC2EB+107]
+	RtlClearBits [0x76FAC26F+191]
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_job_manager.py", line 129, in wait_for_any_element
+        EC.presence_of_element_located((By.CSS_SELECTOR, selector))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    
+    
+    )
+    ^
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_job_manager.py", line 173, in apply_jobs
+    element = wait_for_any_element(primary_selectors, page_load_timeout)
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_job_manager.py", line 93, in start_applying
+    self.apply_jobs()
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_bot_facade.py", line 57, in start_apply
+    self.apply_component.start_applying()
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\main.py", line 187, in create_and_run_bot
+    bot.start_apply()
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\main.py", line 202, in main
+    create_and_run_bot(email, password, parameters, openai_api_key)
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\main.py", line 219, in <module>
+    main()
+selenium.common.exceptions.TimeoutException: Message: 
+Stacktrace:
+	GetHandleVerifier [0x010CC7F3+24435]
+	(No symbol) [0x01052074]
+	(No symbol) [0x00F206E3]
+	(No symbol) [0x00F68B39]
+	(No symbol) [0x00F68E8B]
+	(No symbol) [0x00FB1AC2]
+	(No symbol) [0x00F8D804]
+	(No symbol) [0x00FAF20A]
+	(No symbol) [0x00F8D5B6]
+	(No symbol) [0x00F5C54F]
+	(No symbol) [0x00F5D894]
+	GetHandleVerifier [0x013D70A3+3213347]
+	GetHandleVerifier [0x013EB0C9+3295305]
+	GetHandleVerifier [0x013E558C+3271948]
+	GetHandleVerifier [0x01167360+658144]
+	(No symbol) [0x0105B27D]
+	(No symbol) [0x01058208]
+	(No symbol) [0x010583A9]
+	(No symbol) [0x0104AAC0]
+	BaseThreadInitThunk [0x75287BA9+25]
+	RtlInitializeExceptionChain [0x76FAC2EB+107]
+	RtlClearBits [0x76FAC26F+191]
