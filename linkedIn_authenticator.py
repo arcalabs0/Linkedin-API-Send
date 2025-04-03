@@ -73,7 +73,7 @@ class LinkedInAuthenticator:
         """Check if the user is already logged in to LinkedIn."""
         self.driver.get('https://www.linkedin.com/feed')
         try:
-            WebDriverWait(self.driver, 20).until(
+            WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, '.share-box-feed-entry__top-bar'))
             )
             buttons = self.driver.find_elements(By.CSS_SELECTOR, '.share-box-feed-entry__top-bar')

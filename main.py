@@ -216,4 +216,5 @@ def main(resume: Path = None):
         print("Refer to the general troubleshooting guide: https://github.com/feder-cr/LinkedIn_AIHawk_automatic_job_application/blob/main/readme.md#configuration")
 
 if __name__ == "__main__":
-    main()
+    from api import app
+    app.run(host='0.0.0.0', port=5000)

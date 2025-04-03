@@ -1,0 +1,54 @@
+Failed to apply for Senior Front End Developer
+Senior Front End Developer with verification at Version 1: Failed to apply to job! Original exception:
+Traceback:
+Traceback (most recent call last):
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_easy_applier.py", line 50, in job_apply
+    self._fill_application_form()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_easy_applier.py", line 155, in _fill_application_form
+    if self._next_or_submit():
+       ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_easy_applier.py", line 172, in _next_or_submit
+    self._check_for_errors()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_easy_applier.py", line 186, in _check_for_errors
+    raise Exception(f"Failed answering or file upload. {str([e.text for e in error_elements])}")
+Exception: Failed answering or file upload. ['Please enter a valid answer', 'Please make a selection', 'Please make a selection', 'Please make a selection', 'Please make a selection', 'Please make a selection', 'Please make a selection', 'Please make a selection']
+
+Traceback (most recent call last):
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_easy_applier.py", line 50, in job_apply
+    self._fill_application_form()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_easy_applier.py", line 155, in _fill_application_form
+    if self._next_or_submit():
+       ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_easy_applier.py", line 172, in _next_or_submit
+    self._check_for_errors()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_easy_applier.py", line 186, in _check_for_errors
+    raise Exception(f"Failed answering or file upload. {str([e.text for e in error_elements])}")
+Exception: Failed answering or file upload. ['Please enter a valid answer', 'Please make a selection', 'Please make a selection', 'Please make a selection', 'Please make a selection', 'Please make a selection', 'Please make a selection', 'Please make a selection']
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_job_manager.py", line 302, in apply_jobs
+    self.easy_applier_component.job_apply(job)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_easy_applier.py", line 54, in job_apply
+    raise Exception(f"Failed to apply to job! Original exception: \nTraceback:\n{tb_str}")
+Exception: Failed to apply to job! Original exception:
+Traceback:
+Traceback (most recent call last):
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_easy_applier.py", line 50, in job_apply
+    self._fill_application_form()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_easy_applier.py", line 155, in _fill_application_form
+    if self._next_or_submit():
+       ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_easy_applier.py", line 172, in _next_or_submit
+    self._check_for_errors()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Marcelo\Documents\github\LinkedInSend\linkedIn_easy_applier.py", line 186, in _check_for_errors
+    raise Exception(f"Failed answering or file upload. {str([e.text for e in error_elements])}")
+Exception: Failed answering or file upload. ['Please enter a valid answer', 'Please make a selection', 'Please make a selection', 'Please make a selection', 'Please make a selection', 'Please make a selection', 'Please make a selection', 'Please make a selection']

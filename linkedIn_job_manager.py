@@ -83,12 +83,27 @@ class LinkedInJobManager:
             utils.printyellow(f"Starting the search for {position} in {location}.")
 
             try:
+                no_jobs_count = 0
                 while True:
                     page_sleep += 1
                     job_page_number += 1
                     utils.printyellow(f"Going to job page {job_page_number}")
                     self.next_job_page(position, location_url, job_page_number)
-                    time.sleep(random.uniform(0.2, 1))
+                    time.sleep(random.uniform(0.15, 0.8))  # Slightly reduced delay
+
+                    # Check if there are any jobs on the page
+                    try:
+                        no_results = self.driver.find_elements(By.CSS_SELECTOR, 
+                            '.jobs-search-no-results-banner, .jobs-search-two-pane__no-results-banner')
+                        if any(elem.is_displayed() for elem in no_results):
+                            no_jobs_count += 1
+                            if no_jobs_count >= 2:  # Check multiple times to ensure it's not a loading issue
+                                utils.printyellow(f"No more jobs found for {position} in this location. Moving to next search.")
+                                break
+                            continue
+                    except Exception:
+                        pass
+
                     utils.printyellow("Starting the application process for this page...")
                     self.apply_jobs()
                     utils.printyellow("Applying to jobs on this page has been completed!")
@@ -99,9 +114,8 @@ class LinkedInJobManager:
                         # time.sleep(time_left)
                         minimum_page_time = time.time() + minimum_time
                     if page_sleep % 5 == 0:
-                        # sleep_time = random.randint(5, 34)
-                        # utils.printyellow(f"Sleeping for {sleep_time / 60} minutes.")
-                        # time.sleep(sleep_time)
+                        sleep_time = random.randint(2, 5)
+                        time.sleep(sleep_time)
                         page_sleep += 1
             except Exception:
                 traceback.format_exc()
@@ -112,9 +126,8 @@ class LinkedInJobManager:
                 # time.sleep(time_left)
                 minimum_page_time = time.time() + minimum_time
             if page_sleep % 5 == 0:
-                # sleep_time = random.randint(50, 90)
-                # utils.printyellow(f"Sleeping for {sleep_time / 60} minutes.")
-                # time.sleep(sleep_time)
+                sleep_time = random.randint(2, 5)
+                time.sleep(sleep_time)
                 page_sleep += 1
 
     def apply_jobs(self):
@@ -365,7 +378,7 @@ class LinkedInJobManager:
                 '.job-card-container .job-card-list__title',
                 '.job-card-container__link span'
             ]
-            
+
             # Wait for job cards to load
             WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, '.job-card-container'))
