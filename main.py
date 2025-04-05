@@ -5,6 +5,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
 import click
+from multiprocessing import Process
 
 from utils import chromeBrowserOptions
 from gpt import GPTAnswerer
@@ -215,6 +216,41 @@ def main(resume: Path = None):
         print(f"An unexpected error occurred: {str(e)}")
         print("Refer to the general troubleshooting guide: https://github.com/feder-cr/LinkedIn_AIHawk_automatic_job_application/blob/main/readme.md#configuration")
 
-if __name__ == "__main__":
+def run_main():
+    main()
+
+def run_flask():
     from api import app
     app.run(host='0.0.0.0', port=5000)
+
+if __name__ == "__main__":
+    import signal
+    import sys
+    
+    processes = []
+
+    def signal_handler(signum, frame):
+        print("\nShutting down gracefully...")
+        for p in processes:
+            if p and p.is_alive():
+                p.terminate()
+                p.join()
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+
+    try:
+        server = Process(target=run_flask)
+        principal = Process(target=run_main)
+        
+        processes.extend([server, principal])
+        
+        server.start()
+        principal.start()
+
+        server.join()
+        principal.join()
+    except Exception as e:
+        print(f"Error in main process: {e}")
+        signal_handler(None, None)
