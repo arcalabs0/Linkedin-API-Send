@@ -68,35 +68,84 @@ function loadConfigData() {
 
 // Setup form listeners (modified)
 function setupFormListeners() {
-  // Config form submission
+  // Config form submission and start
   document
     .getElementById("configForm")
-    .addEventListener("submit", function (e) {
+    .addEventListener("submit", async function (e) {
       e.preventDefault();
-      saveConfigData();
-    });
-
-  // Start button
-  document
-    .getElementById("startBtn")
-    .addEventListener("click", async function () {
       try {
-        const response = await fetch("http://localhost:5000/start", {
-          method: "GET",
+        const configResponse = await fetch("http://localhost:5000/api/config", {
+          method: "POST",
           headers: {
-            Accept: "application/json",
+            "Content-Type": "application/json",
           },
+          body: JSON.stringify({
+            remote: document.getElementById("remote").checked,
+            experienceLevel: Object.fromEntries(
+              Array.from(
+                document.querySelectorAll('input[name="experienceLevel"]')
+              ).map((checkbox) => [checkbox.value, checkbox.checked])
+            ),
+            jobTypes: Object.fromEntries(
+              Array.from(
+                document.querySelectorAll('input[name="jobTypes"]')
+              ).map((checkbox) => [checkbox.value, checkbox.checked])
+            ),
+            date: Object.fromEntries(
+              Array.from(document.querySelectorAll('input[name="date"]')).map(
+                (checkbox) => [checkbox.value, checkbox.checked]
+              )
+            ),
+            positions: document
+              .getElementById("positions")
+              .value.split(",")
+              .map((s) => s.trim()),
+            locations: document
+              .getElementById("locations")
+              .value.split(",")
+              .map((s) => s.trim()),
+            distance: parseInt(document.getElementById("distance").value),
+            companyBlacklist: document
+              .getElementById("companyBlacklist")
+              .value.split(",")
+              .map((s) => s.trim()),
+            titleBlacklist: document.getElementById("titleBlacklist").value
+              ? document
+                  .getElementById("titleBlacklist")
+                  .value.split(",")
+                  .map((s) => s.trim())
+              : [],
+          }),
         });
 
-        const data = await response.json();
-        if (data.status === "completed") {
-          showNotification("Application started successfully!");
+        if (configResponse.ok) {
+          // Save to Chrome storage
+          chrome.storage.sync.set({
+            configData: await configResponse.json(),
+          });
+
+          // Start the application
+          const startResponse = await fetch("http://localhost:5000/start", {
+            method: "GET",
+            headers: {
+              Accept: "application/json",
+            },
+          });
+
+          const data = await startResponse.json();
+          if (data.status === "completed") {
+            showNotification(
+              "Configuration saved and application started successfully!"
+            );
+          } else {
+            showNotification("Failed to start application", true);
+          }
         } else {
-          showNotification("Failed to start application", true);
+          showNotification("Failed to save configuration", true);
         }
       } catch (error) {
         console.error("Error:", error);
-        showNotification("Failed to connect to the application server", true);
+        showNotification("Failed to connect to the server", true);
       }
     });
 }
