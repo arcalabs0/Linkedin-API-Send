@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auto Job Applicator</title>
+  <link rel="stylesheet" href="popup.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Auto Job Applicator</h1>
+    </header>
+
+    <main>
+      <form id="configForm">
+        <div class="form-group">
+          <label class="switch-label">
+            <span>Remote Work</span>
+            <div class="switch">
+              <input type="checkbox" id="remote" checked>
+              <span class="slider round"></span>
+            </div>
+          </label>
+        </div>
+
+        <h4>Experience Level</h4>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="experienceLevel" value="internship" checked> Internship</label>
+          <label><input type="checkbox" name="experienceLevel" value="entry" checked> Entry Level</label>
+          <label><input type="checkbox" name="experienceLevel" value="associate" checked> Associate</label>
+          <label><input type="checkbox" name="experienceLevel" value="mid-senior level"> Mid-Senior Level</label>
+          <label><input type="checkbox" name="experienceLevel" value="director"> Director</label>
+          <label><input type="checkbox" name="experienceLevel" value="executive"> Executive</label>
+        </div>
+
+        <h4>Job Types</h4>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="jobTypes" value="full-time" checked> Full-time</label>
+          <label><input type="checkbox" name="jobTypes" value="contract"> Contract</label>
+          <label><input type="checkbox" name="jobTypes" value="part-time"> Part-time</label>
+          <label><input type="checkbox" name="jobTypes" value="temporary"> Temporary</label>
+          <label><input type="checkbox" name="jobTypes" value="internship"> Internship</label>
+          <label><input type="checkbox" name="jobTypes" value="other"> Other</label>
+          <label><input type="checkbox" name="jobTypes" value="volunteer"> Volunteer</label>
+        </div>
+
+        <h4>Date Posted</h4>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="date" value="all time"> All Time</label>
+          <label><input type="checkbox" name="date" value="month" checked> Past Month</label>
+          <label><input type="checkbox" name="date" value="week"> Past Week</label>
+          <label><input type="checkbox" name="date" value="24 hours"> Past 24 Hours</label>
+        </div>
+
+        <div class="form-group">
+          <label>Positions (comma-separated)</label>
+          <input type="text" id="positions" value="Software developer">
+        </div>
+
+        <div class="form-group">
+          <label>Locations (comma-separated)</label>
+          <input type="text" id="locations" value="Brazil">
+        </div>
+
+        <div class="form-group">
+          <label>Distance (km)</label>
+          <input type="number" id="distance" value="100">
+        </div>
+
+        <div class="form-group">
+          <label>Company Blacklist (comma-separated)</label>
+          <input type="text" id="companyBlacklist" value="Noir, Crossover">
+        </div>
+
+        <div class="form-group">
+          <label>Title Blacklist (comma-separated, optional)</label>
+          <input type="text" id="titleBlacklist">
+        </div>
+
+        <button type="submit" id="saveConfigBtn" class="primary-btn">Save Configuration</button>
+      </form>
+    </main>
+
+    <footer>
+      <div class="actions">
+        <button id="startBtn" class="action-btn easy-apply-btn">
+          <i class="fas fa-play"></i> Start Application
+        </button>
+      </div>
+      <p class="version">Auto Job Applicator v1.0</p>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

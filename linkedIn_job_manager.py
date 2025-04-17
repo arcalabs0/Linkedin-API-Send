@@ -380,7 +380,7 @@ class LinkedInJobManager:
             ]
 
             # Wait for job cards to load
-            WebDriverWait(self.driver, 10).until(
+            WebDriverWait(self.driver, 5).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, '.job-card-container'))
             )
 

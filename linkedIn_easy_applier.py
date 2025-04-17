@@ -55,14 +55,14 @@ class LinkedInEasyApplier:
 
 
     def _find_easy_apply_button(self) -> WebElement:
-        buttons = WebDriverWait(self.driver, 5).until(
+        buttons = WebDriverWait(self.driver, 3).until(
             EC.presence_of_all_elements_located(
                 (By.XPATH, '//button[contains(@class, "jobs-apply-button") and contains(., "Easy Apply")]')
             )
         )
         for index, button in enumerate(buttons):
             try:
-                return WebDriverWait(self.driver, 5).until(
+                return WebDriverWait(self.driver, 3).until(
                     EC.element_to_be_clickable(
                         (By.XPATH, f'(//button[contains(@class, "jobs-apply-button") and contains(., "Easy Apply")])[{index + 1}]')
                     )
